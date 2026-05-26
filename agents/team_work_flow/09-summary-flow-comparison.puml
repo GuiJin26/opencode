@@ -1,0 +1,98 @@
+@startuml Summary Flow Comparison
+
+title Sub-agent vs Generic Agent: Simplified Communication
+
+skinparam backgroundColor #FEFEFE
+skinparam ranksep 80
+
+' ==================== LEFT SIDE: Generic Agent Approach ====================
+rectangle "Traditional Approach\n(Generic Agent)" as traditional #FFCDD2 {
+    
+    package "User Experience" #FFEBEE {
+        actor "Developer" as dev1
+        note bottom of dev1
+            Must provide:
+            • Full context
+            • Detailed prompts
+            • Step-by-step instructions
+            • Tool configurations
+            • Team standards
+        end note
+    }
+    
+    rectangle "Generic\nAgent" as generic #FFE0B2
+    
+    package "Required Prompts (Manual)" #FFF9C4 {
+        rectangle "Prompt 1:\nGet ticket details\nfrom JIRA" as p1
+        rectangle "Prompt 2:\nRead API coding\nstandards" as p2
+        rectangle "Prompt 3:\nFollow team\npatterns" as p3
+        rectangle "Prompt 4:\nUse specific\nerror handling" as p4
+        rectangle "Prompt 5:\nWrite code following\nstyle guide" as p5
+        rectangle "Prompt 6:\nRun tests in\ncorrect env" as p6
+        rectangle "Prompt 7:\nCreate PR with\ntemplate" as p7
+        rectangle "... more prompts ..." as pmore
+    }
+    
+    dev1 --> generic : "Multiple prompts"
+    generic --> p1
+    generic --> p2
+    generic --> p3
+    generic --> p4
+    generic --> p5
+    generic --> p6
+    generic --> p7
+    generic --> pmore
+    
+}
+
+' ==================== RIGHT SIDE: Sub-agent Approach ====================
+rectangle "Our Approach\n(Specialized Sub-agent)" as modern #C8E6C9 {
+    
+    package "User Experience" #E8F5E9 {
+        actor "Developer" as dev2
+        note bottom of dev2
+            Just say:
+            "Complete API-1234"
+            
+            That's it!
+        end note
+    }
+    
+    rectangle "Sub-agent\n(Team-specific AI)" as subagent #A5D6A7 {
+        package "Built-in Intelligence" #FFF3E0 {
+            rectangle "Team Knowledge" as knowledge
+            rectangle "Specialized Skills" as skills
+            rectangle "Tool Integrations\n(MCPs)" as mcps
+        }
+    }
+    
+    dev2 --> subagent : "Single request"
+    
+}
+
+' ==================== Arrow ====================
+traditional -r[hidden]--> modern
+
+' ==================== Result Note ====================
+note right of modern
+    **Result:** 90% reduction in prompts
+    Sub-agent already knows:
+    • Team coding standards
+    • Project architecture
+    • Tool configurations
+    • Workflow steps
+    • Best practices
+end note
+
+legend bottom
+    |= Approach | Prompts Required | Knowledge Source |
+    | Generic Agent | 10-20+ prompts per task | User provides everything |
+    | Specialized Sub-agent | 1 prompt per task | Pre-configured team intelligence |
+    
+    --
+    Time savings: ~70% faster task completion
+    Quality: Consistent team standards
+    Simplicity: Natural language requests
+end legend
+
+@enduml
