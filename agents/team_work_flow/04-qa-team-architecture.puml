@@ -1,0 +1,74 @@
+@startuml QA Team Architecture
+
+title QA Team Architecture
+
+skinparam backgroundColor #FEFEFE
+skinparam ranksep 150
+
+' ==================== Team Members ====================
+package "Team Members" #FFECB3 {
+    rectangle "QA Engineer" as qa_eng
+}
+
+' ==================== Sub-agents ====================
+package "Sub-agents" #FFECB3 {
+    rectangle "Charlie\n(QA Agent)" as charlie
+}
+
+' ==================== Knowledge Base ====================
+package "Knowledge Base" #FFF3E0 {
+    rectangle "Test Standards" as qa_std
+    rectangle "QA Project Context" as qa_ctx
+}
+
+' ==================== Skills ====================
+package "Skills" #E8F5E9 {
+    rectangle "Test Automation\nSkill" as test_skill
+    rectangle "Bug Triage\nSkill" as bug_skill
+}
+
+' ==================== MCPs ====================
+package "MCPs" #E3F2FD {
+    rectangle "JIRA MCP" as jira_mcp
+    rectangle "TestRail MCP" as testrail_mcp
+    rectangle "CI/CD MCP" as cicd_mcp
+}
+
+' ==================== External Tools ====================
+rectangle "JIRA" as jira #ECEFF1
+rectangle "TestRail" as testrail #ECEFF1
+rectangle "Jenkins/CircleCI" as cicd #ECEFF1
+
+' ==================== Relationships ====================
+' User to Agent
+qa_eng --> charlie : uses
+
+' Agent to Knowledge
+charlie --> qa_std : reads
+charlie --> qa_ctx : reads
+
+' Agent to Skill
+charlie --> test_skill : executes
+charlie --> bug_skill : executes
+
+' Skill to MCP
+test_skill --> jira_mcp : requires
+test_skill --> testrail_mcp : requires
+test_skill --> cicd_mcp : requires
+bug_skill --> jira_mcp : requires
+
+' MCP to External Tools
+jira_mcp --> jira : connects
+testrail_mcp --> testrail : connects
+cicd_mcp --> cicd : connects
+
+legend right
+  |= Layer |= Purpose |
+  | <#FFECB3> Team Members | Human developers |
+  | <#FFECB3> Agent | AI assistants |
+  | <#FFF3E0> Knowledge | Team intelligence |
+  | <#E8F5E9> Skill | Workflows |
+  | <#E3F2FD> MCP | Tool integration |
+end legend
+
+@enduml

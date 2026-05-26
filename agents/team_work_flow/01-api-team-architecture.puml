@@ -1,0 +1,89 @@
+@startuml Overall Architecture
+
+title AI-Powered Team Architecture - Overview (API Team Example)
+
+skinparam backgroundColor #FEFEFE
+skinparam ranksep 150
+
+' ==================== Team Members ====================
+package "Team Members" #FFEBEE {
+    rectangle "API Developer" as api_dev
+    rectangle "API Tech Lead" as api_lead
+}
+
+' ==================== Sub-agents ====================
+package "Sub-agents" #F3E5F5 {
+    rectangle "Javis\n(API Dev Agent)" as javis
+    rectangle "Sam\n(API Tech Lead Agent)" as sam
+}
+
+' ==================== Knowledge Base ====================
+package "Knowledge Base" #FFF3E0 {
+    rectangle "API Coding Standards\n& Patterns" as api_std
+    rectangle "API Project Context" as api_ctx
+}
+
+' ==================== Skills ====================
+package "Skills" #E8F5E9 {
+    rectangle "API Development\nSkill" as api_skill
+    rectangle "API Code Review\nSkill" as api_review
+    rectangle "API PR Review\nSkill" as api_pr
+}
+
+' ==================== MCPs ====================
+package "MCPs" #E3F2FD {
+    rectangle "JIRA MCP" as jira_mcp
+    rectangle "Git/GitHub MCP" as git_mcp
+    rectangle "Confluence MCP" as conf_mcp
+}
+
+' ==================== External Tools ====================
+rectangle "JIRA" as jira #ECEFF1
+rectangle "GitHub/GitLab" as github #ECEFF1
+rectangle "Confluence" as confluence #ECEFF1
+
+' ==================== Relationships ====================
+' User to Agent
+api_dev --> javis : uses
+api_lead --> sam : uses
+
+' Agent to Knowledge
+javis --> api_std : reads
+javis --> api_ctx : reads
+sam --> api_std : reads
+sam --> api_ctx : reads
+
+' Agent to Skill
+javis --> api_skill : executes
+javis --> api_review : executes
+sam --> api_pr : executes
+sam --> api_review : executes
+
+' Skill to MCP
+api_skill --> jira_mcp : requires
+api_skill --> git_mcp : requires
+api_skill --> conf_mcp : requires
+api_review --> git_mcp : requires
+api_pr --> git_mcp : requires
+
+' MCP to External Tools
+jira_mcp --> jira : connects
+git_mcp --> github : connects
+conf_mcp --> confluence : connects
+
+legend right
+  |= Layer |= Purpose |
+  | <#FFEBEE> Team Members | Human developers |
+  | <#F3E5F5> Agent | AI assistants |
+  | <#FFF3E0> Knowledge | Team intelligence |
+  | <#E8F5E9> Skill | Workflows |
+  | <#E3F2FD> MCP | Tool integration |
+  
+  --
+  Other team diagrams:
+  • 02-ios-team-architecture.puml
+  • 03-android-team-architecture.puml
+  • 04-qa-team-architecture.puml
+end legend
+
+@enduml

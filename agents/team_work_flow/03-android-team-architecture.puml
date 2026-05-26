@@ -1,0 +1,87 @@
+@startuml Android Team Architecture
+
+title Android Team Architecture
+
+skinparam backgroundColor #FEFEFE
+skinparam ranksep 150
+
+' ==================== Team Members ====================
+package "Team Members" #C8E6C9 {
+    rectangle "Android Developer" as aos_dev
+    rectangle "Android Tech Lead" as aos_lead
+}
+
+' ==================== Sub-agents ====================
+package "Sub-agents" #C8E6C9 {
+    rectangle "Andy\n(Android Dev Agent)" as andy
+    rectangle "Jordan\n(Android Tech Lead Agent)" as jordan
+}
+
+' ==================== Knowledge Base ====================
+package "Knowledge Base" #FFF3E0 {
+    rectangle "Android Coding Standards\n& Patterns" as aos_std
+    rectangle "Android Project Context" as aos_ctx
+}
+
+' ==================== Skills ====================
+package "Skills" #E8F5E9 {
+    rectangle "Android Development\nSkill" as aos_skill
+    rectangle "Android Code Review\nSkill" as aos_review
+    rectangle "Android PR Review\nSkill" as aos_pr
+}
+
+' ==================== MCPs ====================
+package "MCPs" #E3F2FD {
+    rectangle "JIRA MCP" as jira_mcp
+    rectangle "Git/GitHub MCP" as git_mcp
+    rectangle "Confluence MCP" as conf_mcp
+    rectangle "Simulator MCP" as sim_mcp
+}
+
+' ==================== External Tools ====================
+rectangle "JIRA" as jira #ECEFF1
+rectangle "GitHub/GitLab" as github #ECEFF1
+rectangle "Confluence" as confluence #ECEFF1
+rectangle "Android Emulator" as emulator #ECEFF1
+
+' ==================== Relationships ====================
+' User to Agent
+aos_dev --> andy : uses
+aos_lead --> jordan : uses
+
+' Agent to Knowledge
+andy --> aos_std : reads
+andy --> aos_ctx : reads
+jordan --> aos_std : reads
+jordan --> aos_ctx : reads
+
+' Agent to Skill
+andy --> aos_skill : executes
+andy --> aos_review : executes
+jordan --> aos_pr : executes
+jordan --> aos_review : executes
+
+' Skill to MCP
+aos_skill --> jira_mcp : requires
+aos_skill --> git_mcp : requires
+aos_skill --> conf_mcp : requires
+aos_skill --> sim_mcp : requires
+aos_review --> git_mcp : requires
+aos_pr --> git_mcp : requires
+
+' MCP to External Tools
+jira_mcp --> jira : connects
+git_mcp --> github : connects
+conf_mcp --> confluence : connects
+sim_mcp --> emulator : connects
+
+legend right
+  |= Layer |= Purpose |
+  | <#C8E6C9> Team Members | Human developers |
+  | <#C8E6C9> Agent | AI assistants |
+  | <#FFF3E0> Knowledge | Team intelligence |
+  | <#E8F5E9> Skill | Workflows |
+  | <#E3F2FD> MCP | Tool integration |
+end legend
+
+@enduml

@@ -1,0 +1,175 @@
+@startuml QA Team Data Flow
+
+title QA Team Data Flow
+
+skinparam backgroundColor #FEFEFE
+
+' Actors
+actor "QA Engineer" as qa
+participant "Sub-agent\n(Charlie)" as charlie
+participant "Skill\n(Test Automation)" as test_skill
+participant "Skill\n(Bug Triage)" as bug_skill
+participant "Knowledge Base" as kb
+participant "JIRA MCP" as jira
+participant "TestRail MCP" as testrail
+participant "CI/CD MCP" as cicd
+
+' External
+participant "JIRA Server" as jira_server
+participant "TestRail Server" as testrail_server
+participant "CI/CD Server" as cicd_server
+
+== Task Initiation ==
+
+qa -> charlie : "Test feature API-1234"
+activate charlie
+
+charlie -> charlie : Parse request
+charlie -> test_skill : Load Test Automation Skill
+activate test_skill
+
+test_skill -> charlie : Workflow steps loaded
+
+== Knowledge Enrichment ==
+
+charlie -> kb : Request team context
+activate kb
+
+kb --> charlie : Test standards loaded
+note right
+  - Test case format
+  - Coverage requirements
+  - Automation guidelines
+end note
+
+kb --> charlie : QA project context loaded
+note right
+  - API endpoints to test
+  - iOS features to test
+  - Android features to test
+end note
+
+deactivate kb
+
+== Test Planning ==
+
+test_skill -> charlie : Execute Step 1: Review Requirements
+
+charlie -> jira : Get ticket API-1234
+activate jira
+jira -> jira_server : REST API call
+jira_server --> jira : Ticket details
+jira --> charlie : Feature specs
+deactivate jira
+
+test_skill -> charlie : Execute Step 2: Create Test Cases
+
+charlie -> charlie : Design test scenarios
+note right
+  - Happy path tests
+  - Edge cases
+  - Error scenarios
+end note
+
+charlie -> testrail : Create test cases
+activate testrail
+testrail -> testrail_server : Create test cases
+testrail_server --> testrail : Test cases created
+testrail --> charlie : Test case IDs
+deactivate testrail
+
+== Test Execution ==
+
+test_skill -> charlie : Execute Step 3: Run Automation
+
+charlie -> cicd : Trigger test pipeline
+activate cicd
+cicd -> cicd_server : Run automated tests
+cicd_server --> cicd : Test results
+cicd --> charlie : Results summary
+deactivate cicd
+
+test_skill -> charlie : Execute Step 4: Analyze Results
+
+charlie -> charlie : Review test results
+note right
+  - Passed tests
+  - Failed tests
+  - Coverage report
+end note
+
+charlie -> testrail : Update test results
+activate testrail
+testrail -> testrail_server : Update test run
+testrail_server --> testrail : Updated
+testrail --> charlie : Success
+deactivate testrail
+
+== Bug Triage ==
+
+test_skill -> charlie : Execute Step 5: Triage Bugs
+
+charlie -> bug_skill : Load Bug Triage Skill
+activate bug_skill
+
+bug_skill -> charlie : Triage workflow loaded
+
+charlie -> charlie : Analyze failed tests
+note right
+  - Reproduce issue
+  - Determine severity
+  - Identify root cause
+end note
+
+charlie -> jira : Create bug tickets
+activate jira
+jira -> jira_server : Create bugs
+jira_server --> jira : Bugs created
+jira --> charlie : Bug IDs
+deactivate jira
+
+charlie -> jira : Link bugs to feature
+activate jira
+jira -> jira_server : Link issues
+jira_server --> jira : Linked
+jira --> charlie : Success
+deactivate jira
+
+bug_skill --> charlie : Triage complete
+deactivate bug_skill
+
+== Test Reporting ==
+
+test_skill -> charlie : Execute Step 6: Generate Report
+
+charlie -> testrail : Generate test report
+activate testrail
+testrail -> testrail_server : Get test run data
+testrail_server --> testrail : Test data
+testrail --> charlie : Report generated
+deactivate testrail
+
+charlie -> jira : Update ticket with results
+activate jira
+jira -> jira_server : Add test summary
+jira_server --> jira : Updated
+jira --> charlie : Success
+deactivate jira
+
+== Response to User ==
+
+charlie --> qa : Testing completed!
+deactivate test_skill
+deactivate charlie
+
+note right of qa
+  **Summary:**
+  - Test Cases: 15 created
+  - Passed: 12
+  - Failed: 3
+  - Bugs: 3 created
+  - Coverage: 85%
+  - TestRail: Report available
+end note
+
+@enduml

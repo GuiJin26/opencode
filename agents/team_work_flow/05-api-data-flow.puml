@@ -1,0 +1,195 @@
+@startuml API Team Data Flow
+
+title API Team Data Flow
+
+skinparam backgroundColor #FEFEFE
+
+' Actors
+actor "API Developer" as dev
+participant "Sub-agent\n(Javis)" as javis
+participant "Sub-agent\n(Sam - Tech Lead)" as sam
+participant "Skill\n(API Dev)" as skill
+participant "Skill\n(Code Review)" as review
+participant "Knowledge Base" as kb
+participant "JIRA MCP" as jira
+participant "Confluence MCP" as conf
+participant "Git MCP" as git
+
+' External
+participant "JIRA Server" as jira_server
+participant "Confluence Server" as conf_server
+participant "GitHub Server" as github_server
+
+== Task Initiation ==
+
+dev -> javis : "Complete API-1234"
+activate javis
+
+javis -> javis : Parse request
+javis -> skill : Load API Development Skill
+activate skill
+
+skill -> javis : Workflow steps loaded
+
+== Knowledge Enrichment ==
+
+javis -> kb : Request team context
+activate kb
+
+kb -> conf : Fetch API coding standards
+activate conf
+conf -> conf_server : API call
+conf_server --> conf : Standards doc
+conf --> kb : API coding standards
+deactivate conf
+
+kb -> conf : Fetch API project context
+activate conf
+conf -> conf_server : API call
+conf_server --> conf : API specs & flows
+conf --> kb : API project context
+deactivate conf
+
+kb --> javis : Team context enriched
+deactivate kb
+
+note right of javis
+  Agent now has:
+  - Ticket context
+  - API coding standards
+  - API specs & flows
+  - Data models
+end note
+
+== Development Workflow ==
+
+skill -> javis : Execute Step 1: Get Requirements
+
+javis -> jira : Get ticket API-1234
+activate jira
+jira -> jira_server : REST API call
+jira_server --> jira : Ticket details
+jira --> javis : Ticket info
+deactivate jira
+
+skill -> javis : Execute Step 2: Design API
+
+javis -> javis : Design API structure
+note right
+  Uses API project context
+  to follow existing patterns
+end note
+
+skill -> javis : Execute Step 3: Implement
+
+javis -> git : Create branch
+activate git
+git -> github_server : git checkout -b
+github_server --> git : Branch created
+git --> javis : Branch ready
+deactivate git
+
+javis -> javis : Write API code
+note right
+  Uses templates from skill
+  Follows API coding standards
+end note
+
+javis -> git : Commit changes
+activate git
+git -> github_server : git commit
+github_server --> git : Committed
+git --> javis : Success
+deactivate git
+
+skill -> javis : Execute Step 4: Self-Review
+
+javis -> review : Load Code Review Skill
+activate review
+review -> javis : Checklist loaded
+
+javis -> javis : Run review checklist
+note right
+  - Error handling
+  - Response formats
+  - Authentication
+end note
+
+review --> javis : Review passed
+deactivate review
+
+skill -> javis : Execute Step 5: Update Docs
+
+javis -> conf : Update API docs
+activate conf
+conf -> conf_server : Update API spec
+conf_server --> conf : Updated
+conf --> javis : Success
+deactivate conf
+
+skill -> javis : Execute Step 6: Create PR
+
+javis -> git : Create pull request
+activate git
+git -> github_server : Create PR
+github_server --> git : PR #567 created
+git --> javis : PR URL
+deactivate git
+
+javis -> jira : Update ticket status
+activate jira
+jira -> jira_server : Transition to In Review
+jira_server --> jira : Updated
+jira --> javis : Success
+deactivate jira
+
+== Tech Lead Review ==
+
+sam -> git : Review PR #567
+activate git
+git -> github_server : Get PR details
+github_server --> git : PR diff
+git --> sam : PR content
+deactivate git
+
+sam -> review : Load Code Review Skill
+activate review
+review -> sam : Checklist loaded
+
+sam -> kb : Get API coding standards
+activate kb
+kb --> sam : Standards loaded
+deactivate kb
+
+sam -> sam : Review against standards
+note right
+  - Architecture patterns
+  - Security best practices
+  - Performance considerations
+end note
+
+sam -> git : Approve PR
+activate git
+git -> github_server : Add approval
+github_server --> git : Approved
+git --> sam : Success
+deactivate git
+
+review --> sam : Review complete
+deactivate review
+
+== Response to User ==
+
+javis --> dev : Task completed!
+deactivate skill
+deactivate javis
+
+note right of dev
+  **Summary:**
+  - Branch: feature/API-1234
+  - PR: #567 (Approved)
+  - JIRA: Ready to Merge
+  - Docs: Updated
+end note
+
+@enduml

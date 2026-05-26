@@ -1,0 +1,201 @@
+@startuml iOS Team Data Flow
+
+title iOS Team Data Flow
+
+skinparam backgroundColor #FEFEFE
+
+' Actors
+actor "iOS Developer" as dev
+participant "Sub-agent\n(Alex)" as alex
+participant "Sub-agent\n(Morgan - Tech Lead)" as morgan
+participant "Skill\n(iOS Dev)" as skill
+participant "Skill\n(Code Review)" as review
+participant "Knowledge Base" as kb
+participant "JIRA MCP" as jira
+participant "Confluence MCP" as conf
+participant "Git MCP" as git
+participant "Simulator MCP" as sim
+
+' External
+participant "JIRA Server" as jira_server
+participant "Confluence Server" as conf_server
+participant "GitHub Server" as github_server
+participant "iOS Simulator" as simulator_app
+
+== Task Initiation ==
+
+dev -> alex : "Complete iOS-1234"
+activate alex
+
+alex -> alex : Parse request
+alex -> skill : Load iOS Development Skill
+activate skill
+
+skill -> alex : Workflow steps loaded
+
+== Knowledge Enrichment ==
+
+alex -> kb : Request team context
+activate kb
+
+kb -> conf : Fetch iOS coding standards
+activate conf
+conf -> conf_server : API call
+conf_server --> conf : Standards doc
+conf --> kb : iOS coding standards
+deactivate conf
+
+kb -> conf : Fetch iOS project context
+activate conf
+conf -> conf_server : API call
+conf_server --> conf : Screen flows & specs
+conf --> kb : iOS project context
+deactivate conf
+
+kb --> alex : Team context enriched
+deactivate kb
+
+note right of alex
+  Agent now has:
+  - Ticket context
+  - iOS coding standards
+  - Screen flows
+  - UI specifications
+end note
+
+== Development Workflow ==
+
+skill -> alex : Execute Step 1: Get Requirements
+
+alex -> jira : Get ticket iOS-1234
+activate jira
+jira -> jira_server : REST API call
+jira_server --> jira : Ticket details
+jira --> alex : Ticket info
+deactivate jira
+
+skill -> alex : Execute Step 2: Design UI
+
+alex -> alex : Design screen & flow
+note right
+  Uses iOS project context
+  to follow existing patterns
+end note
+
+skill -> alex : Execute Step 3: Implement
+
+alex -> git : Create branch
+activate git
+git -> github_server : git checkout -b
+github_server --> git : Branch created
+git --> alex : Branch ready
+deactivate git
+
+alex -> alex : Write iOS code
+note right
+  - SwiftUI/UIKit views
+  - ViewModel logic
+  - API integration
+end note
+
+skill -> alex : Execute Step 4: Test on Simulator
+
+alex -> sim : Build & run on simulator
+activate sim
+sim -> simulator_app : Build app
+simulator_app --> sim : App running
+sim -> sim : Run UI tests
+sim --> alex : Tests passed
+deactivate sim
+
+skill -> alex : Execute Step 5: Self-Review
+
+alex -> review : Load Code Review Skill
+activate review
+review -> alex : Checklist loaded
+
+alex -> alex : Run review checklist
+note right
+  - MVVM patterns
+  - Memory management
+  - UI guidelines
+end note
+
+review --> alex : Review passed
+deactivate review
+
+skill -> alex : Execute Step 6: Create PR
+
+alex -> git : Commit & create PR
+activate git
+git -> github_server : git commit & push
+github_server --> git : Committed
+git -> github_server : Create PR
+github_server --> git : PR #789 created
+git --> alex : PR URL
+deactivate git
+
+alex -> jira : Update ticket status
+activate jira
+jira -> jira_server : Transition to In Review
+jira_server --> jira : Updated
+jira --> alex : Success
+deactivate jira
+
+== Tech Lead Review ==
+
+morgan -> git : Review PR #789
+activate git
+git -> github_server : Get PR details
+github_server --> git : PR diff
+git --> morgan : PR content
+deactivate git
+
+morgan -> review : Load Code Review Skill
+activate review
+review -> morgan : Checklist loaded
+
+morgan -> kb : Get iOS coding standards
+activate kb
+kb --> morgan : Standards loaded
+deactivate kb
+
+morgan -> sim : Test on simulator
+activate sim
+sim -> simulator_app : Build app
+simulator_app --> sim : App running
+sim --> morgan : UI verified
+deactivate sim
+
+morgan -> morgan : Review against standards
+note right
+  - Architecture patterns
+  - Performance
+  - Accessibility
+end note
+
+morgan -> git : Approve PR
+activate git
+git -> github_server : Add approval
+github_server --> git : Approved
+git --> morgan : Success
+deactivate git
+
+review --> morgan : Review complete
+deactivate review
+
+== Response to User ==
+
+alex --> dev : Task completed!
+deactivate skill
+deactivate alex
+
+note right of dev
+  **Summary:**
+  - Branch: feature/iOS-1234
+  - PR: #789 (Approved)
+  - JIRA: Ready to Merge
+  - Simulator: Tests passed
+end note
+
+@enduml

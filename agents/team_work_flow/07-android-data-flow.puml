@@ -1,0 +1,201 @@
+@startuml Android Team Data Flow
+
+title Android Team Data Flow
+
+skinparam backgroundColor #FEFEFE
+
+' Actors
+actor "Android Developer" as dev
+participant "Sub-agent\n(Andy)" as andy
+participant "Sub-agent\n(Jordan - Tech Lead)" as jordan
+participant "Skill\n(Android Dev)" as skill
+participant "Skill\n(Code Review)" as review
+participant "Knowledge Base" as kb
+participant "JIRA MCP" as jira
+participant "Confluence MCP" as conf
+participant "Git MCP" as git
+participant "Simulator MCP" as sim
+
+' External
+participant "JIRA Server" as jira_server
+participant "Confluence Server" as conf_server
+participant "GitHub Server" as github_server
+participant "Android Emulator" as emulator_app
+
+== Task Initiation ==
+
+dev -> andy : "Complete AOS-1234"
+activate andy
+
+andy -> andy : Parse request
+andy -> skill : Load Android Development Skill
+activate skill
+
+skill -> andy : Workflow steps loaded
+
+== Knowledge Enrichment ==
+
+andy -> kb : Request team context
+activate kb
+
+kb -> conf : Fetch Android coding standards
+activate conf
+conf -> conf_server : API call
+conf_server --> conf : Standards doc
+conf --> kb : Android coding standards
+deactivate conf
+
+kb -> conf : Fetch Android project context
+activate conf
+conf -> conf_server : API call
+conf_server --> conf : Screen flows & specs
+conf --> kb : Android project context
+deactivate conf
+
+kb --> andy : Team context enriched
+deactivate kb
+
+note right of andy
+  Agent now has:
+  - Ticket context
+  - Android coding standards
+  - Screen flows
+  - Material Design specs
+end note
+
+== Development Workflow ==
+
+skill -> andy : Execute Step 1: Get Requirements
+
+andy -> jira : Get ticket AOS-1234
+activate jira
+jira -> jira_server : REST API call
+jira_server --> jira : Ticket details
+jira --> andy : Ticket info
+deactivate jira
+
+skill -> andy : Execute Step 2: Design UI
+
+andy -> andy : Design screen & flow
+note right
+  Uses Android project context
+  to follow existing patterns
+end note
+
+skill -> andy : Execute Step 3: Implement
+
+andy -> git : Create branch
+activate git
+git -> github_server : git checkout -b
+github_server --> git : Branch created
+git --> andy : Branch ready
+deactivate git
+
+andy -> andy : Write Android code
+note right
+  - Jetpack Compose/UI views
+  - ViewModel logic
+  - API integration
+end note
+
+skill -> andy : Execute Step 4: Test on Emulator
+
+andy -> sim : Build & run on emulator
+activate sim
+sim -> emulator_app : Build app
+emulator_app --> sim : App running
+sim -> sim : Run UI tests
+sim --> andy : Tests passed
+deactivate sim
+
+skill -> andy : Execute Step 5: Self-Review
+
+andy -> review : Load Code Review Skill
+activate review
+review -> andy : Checklist loaded
+
+andy -> andy : Run review checklist
+note right
+  - MVVM patterns
+  - Memory management
+  - Material Design
+end note
+
+review --> andy : Review passed
+deactivate review
+
+skill -> andy : Execute Step 6: Create PR
+
+andy -> git : Commit & create PR
+activate git
+git -> github_server : git commit & push
+github_server --> git : Committed
+git -> github_server : Create PR
+github_server --> git : PR #890 created
+git --> andy : PR URL
+deactivate git
+
+andy -> jira : Update ticket status
+activate jira
+jira -> jira_server : Transition to In Review
+jira_server --> jira : Updated
+jira --> andy : Success
+deactivate jira
+
+== Tech Lead Review ==
+
+jordan -> git : Review PR #890
+activate git
+git -> github_server : Get PR details
+github_server --> git : PR diff
+git --> jordan : PR content
+deactivate git
+
+jordan -> review : Load Code Review Skill
+activate review
+review -> jordan : Checklist loaded
+
+jordan -> kb : Get Android coding standards
+activate kb
+kb --> jordan : Standards loaded
+deactivate kb
+
+jordan -> sim : Test on emulator
+activate sim
+sim -> emulator_app : Build app
+emulator_app --> sim : App running
+sim --> jordan : UI verified
+deactivate sim
+
+jordan -> jordan : Review against standards
+note right
+  - Architecture patterns
+  - Performance
+  - Accessibility
+end note
+
+jordan -> git : Approve PR
+activate git
+git -> github_server : Add approval
+github_server --> git : Approved
+git --> jordan : Success
+deactivate git
+
+review --> jordan : Review complete
+deactivate review
+
+== Response to User ==
+
+andy --> dev : Task completed!
+deactivate skill
+deactivate andy
+
+note right of dev
+  **Summary:**
+  - Branch: feature/AOS-1234
+  - PR: #890 (Approved)
+  - JIRA: Ready to Merge
+  - Emulator: Tests passed
+end note
+
+@enduml

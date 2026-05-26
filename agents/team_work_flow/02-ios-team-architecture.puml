@@ -1,0 +1,87 @@
+@startuml iOS Team Architecture
+
+title iOS Team Architecture
+
+skinparam backgroundColor #FEFEFE
+skinparam ranksep 150
+
+' ==================== Team Members ====================
+package "Team Members" #F8BBD0 {
+    rectangle "iOS Developer" as ios_dev
+    rectangle "iOS Tech Lead" as ios_lead
+}
+
+' ==================== Sub-agents ====================
+package "Sub-agents" #F8BBD0 {
+    rectangle "Alex\n(iOS Dev Agent)" as alex
+    rectangle "Morgan\n(iOS Tech Lead Agent)" as morgan
+}
+
+' ==================== Knowledge Base ====================
+package "Knowledge Base" #FFF3E0 {
+    rectangle "iOS Coding Standards\n& Patterns" as ios_std
+    rectangle "iOS Project Context" as ios_ctx
+}
+
+' ==================== Skills ====================
+package "Skills" #E8F5E9 {
+    rectangle "iOS Development\nSkill" as ios_skill
+    rectangle "iOS Code Review\nSkill" as ios_review
+    rectangle "iOS PR Review\nSkill" as ios_pr
+}
+
+' ==================== MCPs ====================
+package "MCPs" #E3F2FD {
+    rectangle "JIRA MCP" as jira_mcp
+    rectangle "Git/GitHub MCP" as git_mcp
+    rectangle "Confluence MCP" as conf_mcp
+    rectangle "Simulator MCP" as sim_mcp
+}
+
+' ==================== External Tools ====================
+rectangle "JIRA" as jira #ECEFF1
+rectangle "GitHub/GitLab" as github #ECEFF1
+rectangle "Confluence" as confluence #ECEFF1
+rectangle "iOS Simulator" as simulator #ECEFF1
+
+' ==================== Relationships ====================
+' User to Agent
+ios_dev --> alex : uses
+ios_lead --> morgan : uses
+
+' Agent to Knowledge
+alex --> ios_std : reads
+alex --> ios_ctx : reads
+morgan --> ios_std : reads
+morgan --> ios_ctx : reads
+
+' Agent to Skill
+alex --> ios_skill : executes
+alex --> ios_review : executes
+morgan --> ios_pr : executes
+morgan --> ios_review : executes
+
+' Skill to MCP
+ios_skill --> jira_mcp : requires
+ios_skill --> git_mcp : requires
+ios_skill --> conf_mcp : requires
+ios_skill --> sim_mcp : requires
+ios_review --> git_mcp : requires
+ios_pr --> git_mcp : requires
+
+' MCP to External Tools
+jira_mcp --> jira : connects
+git_mcp --> github : connects
+conf_mcp --> confluence : connects
+sim_mcp --> simulator : connects
+
+legend right
+  |= Layer |= Purpose |
+  | <#F8BBD0> Team Members | Human developers |
+  | <#F8BBD0> Agent | AI assistants |
+  | <#FFF3E0> Knowledge | Team intelligence |
+  | <#E8F5E9> Skill | Workflows |
+  | <#E3F2FD> MCP | Tool integration |
+end legend
+
+@enduml
