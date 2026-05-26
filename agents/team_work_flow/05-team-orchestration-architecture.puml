@@ -1,0 +1,87 @@
+@startuml Team Orchestration Architecture
+
+title AI-Powered Team Orchestration Architecture
+
+skinparam backgroundColor #FEFEFE
+skinparam ranksep 100
+
+' ==================== User Layer ====================
+actor "Developer" as user #FFFFFF
+
+' ==================== Team Sub-agent Layer ====================
+package "Team Sub-agent" #E1BEE7 {
+    rectangle "Qilian Team\nSub-agent" as team_agent #CE93D8 {
+        rectangle "Task\nUnderstanding" as understand
+        rectangle "Workflow\nPlanner" as planner
+        rectangle "Agent\nCoordinator" as coordinator
+    }
+}
+
+' ==================== Orchestration Harness ====================
+package "Orchestration Harness" #B3E5FC {
+    rectangle "Task Router" as router #81D4FA
+    rectangle "Workflow Engine" as workflow #4FC3F7
+    rectangle "State Manager" as state #29B6F6
+    rectangle "Parallel Executor" as executor #039BE5
+    
+    router -down-> workflow : routes
+    workflow -down-> state : manages
+    state -down-> executor : controls
+}
+
+' ==================== Specialized Agents ====================
+package "Specialized Agents" #F3E5F5 {
+    rectangle "API Agent\n(Javis)" as api_agent #BA68C8
+    rectangle "iOS Agent\n(Alex)" as ios_agent #AB47BC
+    rectangle "Android Agent\n(Andy)" as aos_agent #9C27B0
+    rectangle "QA Agent\n(Charlie)" as qa_agent #8E24AA
+}
+
+' ==================== Relationships ====================
+
+' User to Team Agent
+user -down-> team_agent : "Complete feature\nfor Qilian team"
+
+' Team Agent to Harness
+team_agent -down-> router : "Plan & delegate\ntasks"
+understand -right-> planner
+planner -right-> coordinator
+
+' Harness to Specialized Agents
+executor -down-> api_agent : "Task 1:\nAPI work"
+executor -down-> ios_agent : "Task 2:\niOS work"
+executor -down-> aos_agent : "Task 3:\nAndroid work"
+executor -down-> qa_agent : "Task 4:\nTesting"
+
+' ==================== Workflow Example ====================
+note right of user
+    **Example Workflow:**
+    
+    User: "Complete feature-123"
+    
+    1. Team Agent analyzes task
+    2. Harness plans workflow:
+       • API: Create endpoint
+       • iOS: Implement UI
+       • Android: Implement UI
+       • QA: Write tests
+    3. Harness coordinates execution
+    4. Agents work in parallel/sequence
+    5. Team Agent reports results
+end note
+
+' ==================== Legend ====================
+legend bottom
+    |= Layer |= Purpose |
+    | <#E1BEE7> Team Sub-agent | Single entry point, task orchestration |
+    | <#B3E5FC> Orchestration Harness | Workflow control, agent coordination |
+    | <#F3E5F5> Specialized Agents | Domain-specific execution |
+    
+    --
+    **Key Innovation:**
+    • One prompt to Team Agent
+    • Automatic task distribution
+    • Parallel/sequential execution
+end legend
+
+@enduml
